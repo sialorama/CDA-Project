@@ -1,0 +1,146 @@
+@startuml
+hide empty members
+
+entity Roles {
+    * id : SERIAL [PK]
+    ---
+    role_name : VARCHAR(100)
+}
+
+entity Centers {
+    * id : SERIAL [PK]
+    ---
+    center_name : VARCHAR(100)
+    center_address : VARCHAR(255)
+    center_telephone : VARCHAR(15)
+}
+
+abstract class Person {
+    * id : SERIAL [PK]
+    ---
+    first_name : VARCHAR(100)
+    last_name : VARCHAR(100)
+    email : VARCHAR(100) [unique]
+    telephone : VARCHAR(15)
+    password : VARCHAR(255)
+    role_id : INTEGER [FK]
+}
+
+entity Candidates {
+    birth_date : DATE
+}
+
+entity Formers {}
+
+entity Administrators {}
+
+entity FranceTravailAdvisors {
+    agency : VARCHAR(100)
+}
+
+entity Paths {
+    * id : SERIAL [PK]
+    ---
+    candidate_id : INTEGER [FK]
+    center_id : INTEGER [FK]
+    former_id : INTEGER [FK]
+    ft_advisor_id : INTEGER [FK]
+    start_date : DATE
+    end_date : DATE
+    adherence : BOOLEAN
+    non_adherence_reason : TEXT
+}
+
+entity Phases {
+    * id : SERIAL [PK]
+    ---
+    path_id : INTEGER [FK]
+    phase_name : VARCHAR(100)
+}
+
+entity Workshop {
+    * id : SERIAL [PK]
+    ---
+    name : VARCHAR(100)
+    description : TEXT
+    objectives : TEXT
+    duration : INTEGER
+    prerequisites : TEXT
+}
+
+entity WorkshopSession {
+    * id : SERIAL [PK]
+    ---
+    workshop_id : INTEGER [FK]
+    phase_id : INTEGER [FK]
+    start_date : DATE
+    end_date : DATE
+}
+
+entity Engagemnt {
+    * id : SERIAL [PK]
+    ---
+    workshop_session_id : INTEGER [FK]
+    candidate_id : INTEGER [FK]
+    present : BOOLEAN
+    candidate_comments : TEXT
+}
+
+entity Assessments {
+    * id : SERIAL [PK]
+    ---
+    workshop_attendance_id : INTEGER [FK]
+    former_comments : TEXT
+}
+
+entity ExitAssessment {
+    * id : SERIAL [PK]
+    ---
+    path_id : INTEGER [FK]
+    candidate_comments : TEXT
+    former_comments : TEXT
+    signature_date : DATE
+}
+
+entity Notifications {
+    * id : SERIAL [PK]
+    ---
+    person_id : INTEGER [FK]
+    message : TEXT
+    date_sent : TIMESTAMP
+    is_read : BOOLEAN
+}
+
+entity Documents {
+    * id : SERIAL [PK]
+    ---
+    path_id : INTEGER [FK]
+    document_type : VARCHAR(50)
+    content : BYTEA
+    generation_date : DATE
+}
+
+Person <|-- Candidates
+Person <|-- Formers
+Person <|-- Administrators
+Person <|-- FranceTravailAdvisors
+
+Roles ||--o{ Person
+Centers ||--o{ Paths
+Centers ||--o{ WorkshopSession
+Candidates ||--o{ Paths
+Candidates ||--o{ Engagemnt
+Formers ||--o{ Paths
+Formers ||--o{ WorkshopSession
+Formers ||--o{ Assessments
+FranceTravailAdvisors ||--o{ Paths
+Paths ||--o{ Phases
+Paths ||--o{ ExitAssessment
+Paths ||--o{ Documents
+Phases ||--o{ WorkshopSession
+Workshop ||--o{ WorkshopSession
+Engagemnt }o--|| WorkshopSession
+Engagemnt ||--o{ Assessments
+Workshop ||--o{ Assessments
+ExitAssessment ||--o{ Documents
+@enduml
